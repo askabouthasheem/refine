@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="h-full bg-obsidian">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REFINE // Gatekeeper Auth</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#090A0F',
+                        lead: '#151722',
+                        leadlight: '#1E2132',
+                        electrum: '#E6C887',
+                        rust: '#C86B45',
+                        techblue: '#489EB5',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full font-sans text-gray-200 antialiased flex items-center justify-center p-4 bg-obsidian relative overflow-hidden">
+    
+    <!-- Background Canvas representing scrambling/de-entropy matrix rain -->
+    <canvas id="auth-bg-matrix" class="absolute inset-0 w-full h-full opacity-15 pointer-events-none"></canvas>
+    
+    <div class="w-full max-w-md bg-lead border border-leadlight rounded-lg shadow-2xl overflow-hidden z-10">
+        
+        <!-- Auth Header -->
+        <div class="border-b border-leadlight bg-obsidian p-6 text-center select-none">
+            <div class="w-10 h-10 rounded border border-electrum flex items-center justify-center font-display text-electrum font-bold text-lg select-none mx-auto mb-3">
+                Æ
+            </div>
+            <h2 class="font-display text-xl font-bold tracking-tight text-white uppercase">REFINE Gatekeeper</h2>
+            <p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">Identity & cryptology clearance</p>
+        </div>
+        
+        <!-- Form Toggle tabs -->
+        <div class="flex border-b border-leadlight bg-obsidian/40 font-mono text-xs select-none">
+            <button id="tab-login" onclick="toggleForm('login')" class="flex-1 text-center py-3 border-b-2 border-electrum text-electrum font-semibold uppercase">Sign In</button>
+            <button id="tab-register" onclick="toggleForm('register')" class="flex-1 text-center py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 uppercase">Create Account</button>
+        </div>
+        
+        <!-- Form Content Container -->
+        <div class="p-6">
+            
+            <!-- Error feedback alert (hidden) -->
+            <div id="auth-error-box" class="bg-rust/10 border border-rust text-rust p-3 rounded text-xs font-mono mb-4 hidden leading-tight">
+                Authentication failed. Invalid inputs.
+            </div>
+            
+            <form id="auth-form" onsubmit="handleSubmit(event)" class="space-y-4 font-mono text-xs text-gray-300">
+                
+                <!-- Full Name (Only for Registration) -->
+                <div id="field-name" class="space-y-1.5 hidden">
+                    <label class="text-[10px] text-gray-400 uppercase tracking-wider block">Full Name</label>
+                    <input type="text" id="input-name" placeholder="John Doe" 
+                           class="w-full bg-obsidian border border-leadlight rounded p-3 text-gray-200 focus:outline-none focus:border-electrum">
+                </div>
+                
+                <!-- Email Address -->
+                <div class="space-y-1.5">
+                    <label class="text-[10px] text-gray-400 uppercase tracking-wider block">Email Address</label>
+                    <input type="email" id="input-email" required placeholder="name@example.com" 
+                           class="w-full bg-obsidian border border-leadlight rounded p-3 text-gray-200 focus:outline-none focus:border-electrum">
+                </div>
+                
+                <!-- Password -->
+                <div class="space-y-1.5">
+                    <label class="text-[10px] text-gray-400 uppercase tracking-wider block">Password</label>
+                    <input type="password" id="input-password" required placeholder="••••••••" 
+                           class="w-full bg-obsidian border border-leadlight rounded p-3 text-gray-200 focus:outline-none focus:border-electrum">
+                </div>
+                
+                <!-- Actions -->
+                <div class="pt-2">
+                    <button type="submit" id="btn-submit" 
+                            class="w-full bg-rust hover:bg-opacity-95 text-white py-3.5 rounded text-xs font-bold uppercase tracking-widest shadow-md transition-colors">
+                        Authorize Session
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="/" class="text-[10px] font-mono text-gray-500 hover:text-electrum transition-colors uppercase">← Return to Landing Page</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast System -->
+    <div id="toast" class="fixed bottom-6 left-6 bg-lead border border-electrum px-4 py-3 rounded shadow-2xl flex items-center space-x-3 text-xs font-mono transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <span class="w-1.5 h-1.5 rounded-full bg-electrum"></span>
+        <span id="toast-message" class="text-gray-100">Notification message.</span>
+    </div>
+
+    <script>
+        let authMode = 'login';
+        
+        // Check if user is already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('refine_token')) {
+                window.location.href = '/workbench';
+            }
+            initMatrixRain();
+        });
+        
+        // Show Toast Notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+        
+        // Toggle tabs
+        function toggleForm(mode) {
+            authMode = mode;
+            const tabLogin = document.getElementById('tab-login');
+            const tabReg = document.getElementById('tab-register');
+            const fieldName = document.getElementById('field-name');
+            const btnSubmit = document.getElementById('btn-submit');
+            const errBox = document.getElementById('auth-error-box');
+            
+            errBox.classList.add('hidden');
+            
+            if (mode === 'login') {
+                tabLogin.className = "flex-1 text-center py-3 border-b-2 border-electrum text-electrum font-semibold uppercase";
+                tabReg.className = "flex-1 text-center py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 uppercase";
+                fieldName.classList.add('hidden');
+                document.getElementById('input-name').required = false;
+                btnSubmit.textContent = "Authorize Session";
+            } else {
+                tabReg.className = "flex-1 text-center py-3 border-b-2 border-electrum text-electrum font-semibold uppercase";
+                tabLogin.className = "flex-1 text-center py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 uppercase";
+                fieldName.classList.remove('hidden');
+                document.getElementById('input-name').required = true;
+                btnSubmit.textContent = "Create New Profile";
+            }
+        }
+        
+        // Form submit handler
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const errBox = document.getElementById('auth-error-box');
+            const btn = document.getElementById('btn-submit');
+            
+            errBox.classList.add('hidden');
+            btn.disabled = true;
+            btn.textContent = authMode === 'login' ? "AUTHENTICATING..." : "CREATING USER...";
+            
+            const email = document.getElementById('input-email').value;
+            const password = document.getElementById('input-password').value;
+            
+            let url = '/api/auth/login';
+            let payload = { email, password };
+            
+            if (authMode === 'register') {
+                url = '/api/auth/register';
+                payload.name = document.getElementById('input-name').value;
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.detail || "Authentication request rejected.");
+                }
+                
+                // Write session keys
+                localStorage.setItem('refine_token', data.token);
+                localStorage.setItem('refine_username', data.user.name);
+                localStorage.setItem('refine_email', data.user.email);
+                
+                showToast("Identity cleared. Launching workspace...");
+                
+                setTimeout(() => {
+                    window.location.href = '/workbench';
+                }, 1000);
+                
+            } catch (err) {
+                console.error(err);
+                errBox.textContent = err.message || "Network credentials mismatch.";
+                errBox.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = authMode === 'login' ? "Authorize Session" : "Create New Profile";
+            }
+        }
+        
+        // Matrix Scramble effect inside background
+        const canvas = document.getElementById('auth-bg-matrix');
+        const ctx = canvas.getContext('2d');
+        let columns = [];
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/*-+[]{}&%@#";
+        
+        function initMatrixRain() {
+            const w = canvas.width = window.innerWidth;
+            const h = canvas.height = window.innerHeight;
+            const columnCount = Math.floor(w / 16);
+            columns = [];
+            for (let i = 0; i < columnCount; i++) {
+                columns.push({
+                    x: i * 16,
+                    y: Math.random() * -h,
+                    speed: 2 + Math.random() * 4
+                });
+            }
+            drawMatrixRain();
+        }
+        
+        function drawMatrixRain() {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.fillStyle = 'rgba(9, 10, 15, 0.15)'; // Fading trail
+            ctx.fillRect(0, 0, w, h);
+            
+            ctx.fillStyle = '#489EB5'; // Techblue text color
+            ctx.font = '10px "JetBrains Mono"';
+            
+            columns.forEach(col => {
+                const char = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(char, col.x, col.y);
+                col.y += col.speed;
+                if (col.y > h) {
+                    col.y = -20;
+                    col.speed = 2 + Math.random() * 4;
+                }
+            });
+            
+            requestAnimationFrame(drawMatrixRain);
+        }
+        
+        window.addEventListener('resize', initMatrixRain);
+    </script>
+</body>
+</html>

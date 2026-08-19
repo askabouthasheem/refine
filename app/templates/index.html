@@ -1,0 +1,978 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="h-full bg-obsidian">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REFINE // AI Watermark & Provenance Scrambler</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#090A0F',
+                        lead: '#151722',
+                        leadlight: '#1E2132',
+                        electrum: '#E6C887',
+                        rust: '#C86B45',
+                        techblue: '#489EB5',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090A0F;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E2132;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #C86B45;
+        }
+        
+        /* Interactive split slider */
+        .comparison-slider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #E6C887;
+            cursor: ew-resize;
+        }
+        .comparison-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background: #151722;
+            border: 2px solid #E6C887;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #E6C887;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-gray-200 antialiased flex flex-col selection:bg-rust selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-leadlight bg-lead/75 backdrop-blur-md px-6 py-4 flex items-center justify-between z-10">
+        <div class="flex items-center space-x-3">
+            <!-- Icon/Logo -->
+            <a href="/" class="w-8 h-8 rounded border border-electrum hover:border-rust flex items-center justify-center font-display text-electrum hover:text-rust font-bold text-lg select-none transition-colors">
+                Æ
+            </a>
+            <div>
+                <h1 class="font-display font-bold text-lg tracking-wide text-gray-100 flex items-center">
+                    <a href="/" class="hover:text-electrum transition-colors">REFINE</a>
+                    <span class="ml-2 px-1.5 py-0.5 text-[10px] font-mono font-medium border border-rust text-rust rounded">V1.0</span>
+                </h1>
+                <p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">AI watermark & provenance scrambler</p>
+            </div>
+        </div>
+        
+        <!-- Navigation Actions & Live Status Bar -->
+        <div class="flex items-center space-x-4 font-mono text-xs">
+            <a href="/" class="text-gray-400 hover:text-electrum transition-colors hidden sm:inline uppercase tracking-wider text-[11px]">← Home</a>
+            <a href="https://github.com/Refine/Refine" target="_blank"
+               class="hidden sm:flex items-center gap-1.5 border border-leadlight hover:border-electrum text-gray-400 hover:text-electrum px-3 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+            </a>
+            <span class="hidden md:flex items-center gap-2 px-2 py-1 border border-leadlight rounded text-[9px] font-mono text-techblue uppercase tracking-widest">
+                <span class="w-1.5 h-1.5 rounded-full bg-techblue animate-pulse"></span>MIT · All Unlocked
+            </span>
+            
+            <!-- User Profile Section -->
+            <div class="flex items-center space-x-2 border-l border-leadlight pl-4">
+                <div class="w-7 h-7 rounded-full bg-leadlight border border-electrum flex items-center justify-center font-display text-[10px] font-bold text-electrum select-none uppercase" id="user-avatar-initials">..</div>
+                <div class="hidden sm:block text-left text-[10px] font-mono leading-none">
+                    <div class="text-gray-200 font-bold" id="user-profile-name">Loading</div>
+                    <button onclick="logoutSession()" class="text-rust hover:text-white transition-colors uppercase tracking-wider mt-1 text-[9px] block">Sign Out</button>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex items-center space-x-2 border-l border-leadlight pl-4">
+                <span class="text-gray-400">SECURITY: <span class="text-electrum font-semibold">SECURE</span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        
+        <!-- Left Pane: Telemetry & Controls -->
+        <aside class="w-full lg:w-80 border-r border-leadlight bg-lead p-6 flex flex-col justify-between overflow-y-auto shrink-0 space-y-6">
+            <div class="space-y-6">
+                <!-- Title & Section Header -->
+                <div>
+                    <h2 class="font-display text-xs font-semibold text-electrum uppercase tracking-wider">Telemetry Card</h2>
+                    <p class="text-xs text-gray-400 mt-1">Live metrics of current workspace purification.</p>
+                </div>
+                
+                <!-- Telemetry Stats List -->
+                <div class="grid grid-cols-2 lg:grid-cols-1 gap-4 font-mono">
+                    <div class="border border-leadlight bg-obsidian p-4 rounded relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-16 h-16 opacity-5 pointer-events-none border-b border-l border-electrum transform rotate-45 translate-x-8 -translate-y-8"></div>
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider">Objects Purified</div>
+                        <div id="metric-objects" class="text-2xl font-bold text-electrum mt-1">0</div>
+                    </div>
+                    
+                    <div class="border border-leadlight bg-obsidian p-4 rounded relative overflow-hidden">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider">Scramble Entropy</div>
+                        <div id="metric-entropy" class="text-2xl font-bold text-rust mt-1">0.0%</div>
+                    </div>
+                    
+                    <div class="border border-leadlight bg-obsidian p-4 rounded relative overflow-hidden">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider">Detection Risk</div>
+                        <div id="metric-risk" class="text-sm font-bold text-gray-400 mt-1.5 flex items-center">
+                            <span class="w-2.5 h-2.5 rounded-full bg-gray-500 mr-2" id="metric-risk-dot"></span>
+                            <span id="metric-risk-text">DORMANT</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-leadlight bg-obsidian p-4 rounded relative overflow-hidden">
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider">Visual Quality</div>
+                        <div id="metric-quality" class="text-2xl font-bold text-techblue mt-1">100.0%</div>
+                    </div>
+                </div>
+                
+                <!-- Separator -->
+                <div class="border-t border-leadlight"></div>
+                
+                <!-- Global Engine Tuning -->
+                <div class="space-y-4">
+                    <div>
+                        <h2 class="font-display text-xs font-semibold text-electrum uppercase tracking-wider">Scrambler Engine Tuning</h2>
+                        <p class="text-[11px] text-gray-400 mt-1">Adjust intensity vs. quality conservation.</p>
+                    </div>
+                    
+                    <!-- Strength selector -->
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-mono uppercase tracking-wider text-gray-300 flex justify-between">
+                            <span>Process Strength</span>
+                            <span id="strength-label" class="text-rust font-bold">MEDIUM</span>
+                        </label>
+                        <input type="range" id="param-strength" min="1" max="3" value="2" 
+                               class="w-full h-1 bg-obsidian rounded-lg appearance-none cursor-pointer accent-rust focus:outline-none focus:ring-1 focus:ring-electrum">
+                        <div class="flex justify-between text-[9px] font-mono text-gray-500">
+                            <span>LIGHT</span>
+                            <span>MEDIUM</span>
+                            <span>AGGRESSIVE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Signature FFT Canvas Visualizer -->
+            <div class="border border-leadlight bg-obsidian p-4 rounded space-y-3 font-mono relative overflow-hidden">
+                <div class="text-[10px] text-gray-400 uppercase tracking-wider flex justify-between items-center">
+                    <span>Spectrograph Canvas</span>
+                    <span id="canvas-status" class="text-gray-500 text-[9px]">IDLE</span>
+                </div>
+                <div class="relative w-full aspect-[4/3] bg-[#0c0d15] rounded border border-leadlight flex items-center justify-center overflow-hidden">
+                    <canvas id="spectrograph" class="absolute inset-0 w-full h-full"></canvas>
+                </div>
+                <p class="text-[9px] text-gray-400 leading-tight">Simulates the raw signal frequency distribution. Disruption patterns animate during live sanitizing.</p>
+            </div>
+        </aside>
+
+        <!-- Right Pane: Main workbench tabs & panels -->
+        <main class="flex-1 flex flex-col bg-obsidian overflow-hidden">
+            
+            <!-- workbench Tabs header -->
+            <div class="border-b border-leadlight bg-lead flex justify-between items-center px-6">
+                <nav class="flex space-x-6" aria-label="Tabs">
+                    <button id="tab-btn-text" onclick="switchTab('text')" 
+                            class="border-b-2 border-electrum text-electrum py-4 px-1 text-sm font-display font-semibold transition-colors duration-150 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        TEXT PURIFIER
+                    </button>
+                    <button id="tab-btn-image" onclick="switchTab('image')" 
+                            class="border-b-2 border-transparent text-gray-400 hover:text-gray-200 py-4 px-1 text-sm font-display font-semibold transition-colors duration-150 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        IMAGE PURIFIER
+                    </button>
+                </nav>
+                
+                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest hidden sm:inline">Workbench Area // Sandbox</span>
+            </div>
+
+            <!-- Content Area (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6">
+                
+                <!-- Tab 1: Text Purifier -->
+                <section id="tab-text" class="space-y-6 h-full flex flex-col justify-between">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 flex-1 min-h-0">
+                        
+                        <!-- Input Area -->
+                        <div class="flex flex-col space-y-3">
+                            <label class="text-xs font-mono uppercase tracking-wider text-gray-300 flex justify-between">
+                                <span>Input Text</span>
+                                <span id="input-char-counter" class="text-gray-500">0 characters</span>
+                            </label>
+                            <textarea id="text-input" 
+                                      placeholder="Paste AI generated text here..." 
+                                      class="flex-1 w-full bg-lead border border-leadlight rounded p-4 font-mono text-sm text-gray-200 focus:outline-none focus:border-electrum focus:ring-1 focus:ring-electrum resize-none min-h-[250px]"></textarea>
+                        </div>
+                        
+                        <!-- Output Area -->
+                        <div class="flex flex-col space-y-3">
+                            <label class="text-xs font-mono uppercase tracking-wider text-gray-300 flex justify-between">
+                                <span>Sanitized Output</span>
+                                <span id="output-char-counter" class="text-gray-500">0 characters</span>
+                            </label>
+                            <div class="relative flex-1 flex flex-col">
+                                <textarea id="text-output" readonly 
+                                          placeholder="Scrambled clean output will appear here..." 
+                                          class="flex-1 w-full bg-lead border border-leadlight rounded p-4 font-mono text-sm text-gray-200 focus:outline-none resize-none min-h-[250px] cursor-text"></textarea>
+                                
+                                <!-- Copy Button Overlay -->
+                                <button id="btn-copy-text" onclick="copyTextToClipboard()"
+                                        class="absolute bottom-3 right-3 bg-obsidian hover:bg-leadlight border border-leadlight hover:border-electrum text-electrum hover:text-white px-3 py-1.5 rounded text-xs font-mono flex items-center transition-colors duration-150">
+                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                    Copy Clean
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Text Control Panel -->
+                    <div class="bg-lead border border-leadlight p-5 rounded mt-6 space-y-4">
+                        <div>
+                            <h3 class="font-display text-xs font-semibold text-electrum uppercase tracking-wider">Text Scrambler Options</h3>
+                            <p class="text-[11px] text-gray-400 mt-0.5">Toggle specific obfuscation mechanisms.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Toggle 1 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-homoglyphs" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">Unicode Homoglyphs</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Swaps Latin letters with identical Cyrillic characters to break tokenizers.</p>
+                                </div>
+                            </label>
+                            
+                            <!-- Toggle 2 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-zws" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">Zero-Width Interspersion</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Injects invisible spacing characters to disrupt classifier n-gram lookups.</p>
+                                </div>
+                            </label>
+                            
+                            <!-- Toggle 3 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-synonyms" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">Linguistic Synonym Mapping</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Replaces signature phrase structure and terms with natural synonyms.</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="flex justify-end pt-2">
+                            <button id="btn-purify-text" onclick="processText()"
+                                    class="bg-rust hover:bg-opacity-90 border border-transparent text-white px-6 py-2.5 rounded text-xs font-mono font-bold tracking-wider uppercase transition-colors duration-150 shadow-md">
+                                Execute Sanitization
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 2: Image Purifier -->
+                <section id="tab-image" class="hidden space-y-6 h-full flex flex-col justify-between">
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 flex-1">
+                        
+                        <!-- Upload & Drag/Drop Area -->
+                        <div class="flex flex-col space-y-3">
+                            <label class="text-xs font-mono uppercase tracking-wider text-gray-300">Source Asset</label>
+                            
+                            <div id="drop-zone" class="flex-1 min-h-[300px] border-2 border-dashed border-leadlight bg-lead rounded flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:border-electrum transition-colors duration-150 relative">
+                                <input type="file" id="image-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleImageUpload(event)">
+                                
+                                <div id="drop-zone-idle" class="space-y-4">
+                                    <div class="w-12 h-12 rounded border border-gray-500 mx-auto flex items-center justify-center text-gray-400">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-200">Drag & Drop Image</p>
+                                        <p class="text-xs text-gray-400 mt-1">PNG, JPG, or WEBP up to 10MB</p>
+                                    </div>
+                                </div>
+                                
+                                <div id="drop-zone-active" class="hidden w-full h-full flex flex-col justify-center items-center">
+                                    <img id="preview-src" class="max-h-[250px] object-contain rounded border border-leadlight" src="" alt="Source preview">
+                                    <p id="src-img-name" class="text-xs font-mono text-electrum mt-3 overflow-hidden text-ellipsis max-w-full"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Comparison Workbench Slider -->
+                        <div class="xl:col-span-2 flex flex-col space-y-3">
+                            <label class="text-xs font-mono uppercase tracking-wider text-gray-300 flex justify-between">
+                                <span>Sanitization Output Workbench</span>
+                                <span id="slider-help" class="text-[10px] text-gray-500 hidden">Drag central slider to inspect changes</span>
+                            </label>
+                            
+                            <!-- Split Viewer container -->
+                            <div class="flex-1 min-h-[300px] bg-[#0A0B10] border border-leadlight rounded relative overflow-hidden flex items-center justify-center select-none" id="slider-container">
+                                
+                                <!-- Empty state message -->
+                                <div id="slider-placeholder" class="text-center text-gray-500 p-6 z-0">
+                                    <p class="text-sm">Upload an image to activate comparison viewer.</p>
+                                </div>
+                                
+                                <!-- Slider Images (hidden initially) -->
+                                <div id="slider-content" class="absolute inset-0 hidden w-full h-full">
+                                    <!-- Back layer: Purified Image -->
+                                    <img id="preview-dest" class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none" src="" alt="Sanitized preview">
+                                    
+                                    <!-- Front layer: Original Image (clipped) -->
+                                    <div id="original-clip-container" class="absolute top-0 left-0 w-full h-full pointer-events-none" style="clip-path: inset(0 50% 0 0)">
+                                        <img id="preview-src-slider" class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none" src="" alt="Original preview">
+                                    </div>
+                                    
+                                    <!-- Interactive slider line & handle -->
+                                    <div id="comparison-slider" class="comparison-slider" style="left: 50%;">
+                                        <div class="comparison-handle">◂▸</div>
+                                    </div>
+                                    
+                                    <!-- Label badges -->
+                                    <span class="absolute top-3 left-3 bg-obsidian/75 backdrop-blur-md px-2 py-0.5 text-[9px] font-mono text-gray-400 border border-leadlight rounded select-none z-10 pointer-events-none">ORIGINAL</span>
+                                    <span class="absolute top-3 right-3 bg-obsidian/75 backdrop-blur-md px-2 py-0.5 text-[9px] font-mono text-electrum border border-leadlight rounded select-none z-10 pointer-events-none">PURIFIED</span>
+                                    
+                                    <!-- Download Button Overlay -->
+                                    <a id="btn-download-image" href="#" download="purified_image.png"
+                                       class="absolute bottom-3 right-3 bg-rust hover:bg-opacity-95 text-white border border-transparent px-4 py-2 rounded text-xs font-mono font-bold uppercase flex items-center transition-colors duration-150 shadow-lg z-10">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        Download Purified
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Control Panel -->
+                    <div class="bg-lead border border-leadlight p-5 rounded mt-6 space-y-4">
+                        <div>
+                            <h3 class="font-display text-xs font-semibold text-electrum uppercase tracking-wider">Spectral & Spatial Scrambler Options</h3>
+                            <p class="text-[11px] text-gray-400 mt-0.5">Toggle and configure image scrambling techniques.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Toggle 1 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-fft" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">FFT Phase Scrambler</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Perturbs high frequency phase maps where digital watermarks reside.</p>
+                                </div>
+                            </label>
+                            
+                            <!-- Toggle 2 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-jpeg" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">DCT Compression Cycle</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Passes image through lossy compression to break grid-level signatures.</p>
+                                </div>
+                            </label>
+                            
+                            <!-- Toggle 3 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-blur" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">Bilateral Smoothing</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Preserves edges while filtering out sub-pixel watermarking fluctuations.</p>
+                                </div>
+                            </label>
+                            
+                            <!-- Toggle 4 -->
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="opt-jitter" checked class="mt-1 w-4 h-4 rounded text-rust border-leadlight bg-obsidian focus:ring-0 focus:ring-offset-0 accent-rust">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-200 font-mono">Sub-pixel Micro-jitter</span>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Applies micro-scaling and rotational shifts to decouple spatial grids.</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="flex justify-end pt-2">
+                            <button id="btn-purify-image" onclick="processImage()"
+                                    class="bg-rust hover:bg-opacity-90 border border-transparent text-white px-6 py-2.5 rounded text-xs font-mono font-bold tracking-wider uppercase transition-colors duration-150 shadow-md">
+                                Scramble Grid Pattern
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast System -->
+    <div id="toast" class="fixed bottom-6 left-6 bg-lead border border-electrum px-4 py-3 rounded shadow-2xl flex items-center space-x-3 text-xs font-mono transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <span class="w-1.5 h-1.5 rounded-full bg-electrum"></span>
+        <span id="toast-message" class="text-gray-100">Notification message.</span>
+    </div>
+
+    <!-- App State and Processing Scripts -->
+    <script>
+        // Global State Variables
+        let currentTab = 'text';
+        let itemsPurifiedCount = 0;
+        let selectedFile = null;
+        
+        // Canvas Setup (Spectrograph simulation)
+        const canvas = document.getElementById('spectrograph');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId = null;
+        let signalIntensity = 0.3; // Default resting signal activity
+        let dots = [];
+        const rows = 12;
+        const cols = 16;
+        
+        // Initialize Spectrograph Particle System
+        function initSpectrograph() {
+            dots = [];
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+            const cellW = w / cols;
+            const cellH = h / rows;
+            
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    dots.push({
+                        baseX: c * cellW + cellW / 2,
+                        baseY: r * cellH + cellH / 2,
+                        x: c * cellW + cellW / 2,
+                        y: r * cellH + cellH / 2,
+                        size: 1 + Math.random() * 2,
+                        freq: 0.02 + Math.random() * 0.05,
+                        phase: Math.random() * Math.PI * 2,
+                        noise: 0,
+                        scrambleVelocity: 0,
+                        opacity: 0.15 + Math.random() * 0.3
+                    });
+                }
+            }
+        }
+        
+        // Animate Spectrograph Grid
+        function drawSpectrograph(time) {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.fillStyle = 'rgba(12, 13, 21, 0.2)'; // Fading trail
+            ctx.fillRect(0, 0, w, h);
+            
+            // Draw grid guidelines
+            ctx.strokeStyle = 'rgba(30, 33, 50, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < cols; i++) {
+                const x = (w / cols) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let i = 0; i < rows; i++) {
+                const y = (h / rows) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+            
+            // Draw signal dots
+            dots.forEach(dot => {
+                // Harmonic vibration based on signal intensity
+                const amplitude = 3 * signalIntensity;
+                dot.noise = Math.sin(time * dot.freq + dot.phase) * amplitude;
+                
+                // Scramble displacement if active velocity exists
+                if (dot.scrambleVelocity > 0.1) {
+                    dot.x += (Math.random() - 0.5) * dot.scrambleVelocity;
+                    dot.y += (Math.random() - 0.5) * dot.scrambleVelocity;
+                    dot.scrambleVelocity *= 0.95; // Friction dampening
+                    dot.opacity = 0.7; // Bright active nodes
+                } else {
+                    // Pull back to base coordinates smoothly
+                    dot.x += (dot.baseX - dot.x) * 0.1;
+                    dot.y += (dot.baseY - dot.y) * 0.1;
+                    dot.opacity += (0.2 - dot.opacity) * 0.05;
+                }
+                
+                // Node Color determination (Electrum gold/Rust red depending on noise)
+                const gradVal = Math.sin(dot.phase + time * 0.01);
+                let color = '#489EB5'; // Techblue default
+                if (dot.scrambleVelocity > 1) {
+                    color = '#C86B45'; // Rust when scrambling
+                } else if (gradVal > 0.5) {
+                    color = '#E6C887'; // Electrum highlight
+                }
+                
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y + dot.noise, dot.size + (dot.scrambleVelocity * 0.15), 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.globalAlpha = Math.max(0.1, dot.opacity);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+            
+            animationFrameId = requestAnimationFrame(drawSpectrograph);
+        }
+        
+        // Trigger Canvas scramble animation on purification action
+        function triggerScrambleAnimation(intensity) {
+            const statusLabel = document.getElementById('canvas-status');
+            statusLabel.textContent = 'SCRAMBLING';
+            statusLabel.className = 'text-rust text-[9px] animate-pulse';
+            
+            // Set stats signal intensity
+            signalIntensity = 2.0 * intensity;
+            
+            dots.forEach(dot => {
+                dot.scrambleVelocity = 15 * intensity;
+            });
+            
+            setTimeout(() => {
+                signalIntensity = 0.3;
+                statusLabel.textContent = 'SECURED';
+                statusLabel.className = 'text-techblue text-[9px]';
+            }, 1200);
+        }
+        
+        // Tab switching controller
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnText = document.getElementById('tab-btn-text');
+            const btnImg = document.getElementById('tab-btn-image');
+            const secText = document.getElementById('tab-text');
+            const secImg = document.getElementById('tab-image');
+            
+            if (tab === 'text') {
+                btnText.className = "border-b-2 border-electrum text-electrum py-4 px-1 text-sm font-display font-semibold transition-colors duration-150 flex items-center";
+                btnImg.className = "border-b-2 border-transparent text-gray-400 hover:text-gray-200 py-4 px-1 text-sm font-display font-semibold transition-colors duration-150 flex items-center";
+                secText.classList.remove('hidden');
+                secImg.classList.add('hidden');
+            } else {
+                btnImg.className = "border-b-2 border-electrum text-electrum py-4 px-1 text-sm font-display font-semibold transition-colors duration-150 flex items-center";
+                btnText.className = "border-b-2 border-transparent text-gray-400 hover:text-gray-200 py-4 px-1 text-sm font-display font-semibold transition-colors duration-150 flex items-center";
+                secText.classList.add('hidden');
+                secImg.classList.remove('hidden');
+                
+                // Recalculate slider sizing if needed when tab shows
+                initComparisonSlider();
+            }
+            showToast(`Switched workspace to ${tab.toUpperCase()} bench.`);
+        }
+        
+        // Show Toast Notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+        
+        // Handle sliders and UI updates
+        const strengthSlider = document.getElementById('param-strength');
+        const strengthLabel = document.getElementById('strength-label');
+        
+        strengthSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const labels = ["LIGHT", "MEDIUM", "AGGRESSIVE"];
+            strengthLabel.textContent = labels[val - 1];
+            
+            // Adjust spectrograph resting signal rate slightly based on slider tuning
+            signalIntensity = 0.15 + (val * 0.15);
+        });
+        
+        // Text Input Counter listener
+        const textInput = document.getElementById('text-input');
+        const inputCounter = document.getElementById('input-char-counter');
+        textInput.addEventListener('input', () => {
+            inputCounter.textContent = `${textInput.value.length} characters`;
+        });
+        
+        // Process text function
+        async function processText() {
+            const textVal = textInput.value;
+            if (!textVal.trim()) {
+                showToast("Please enter some text to sanitize.");
+                return;
+            }
+            
+            const btn = document.getElementById('btn-purify-text');
+            btn.disabled = true;
+            btn.textContent = "PROCESSING...";
+            
+            const strengthVal = ["light", "medium", "aggressive"][parseInt(strengthSlider.value) - 1];
+            
+            const payload = {
+                text: textVal,
+                strength: strengthVal,
+                use_homoglyphs: document.getElementById('opt-homoglyphs').checked,
+                use_zws: document.getElementById('opt-zws').checked,
+                use_synonyms: document.getElementById('opt-synonyms').checked
+            };
+            
+            // Trigger Spectrograph scramble animation
+            triggerScrambleAnimation(strengthSlider.value / 3.0);
+            
+            try {
+                const response = await fetch('/api/purify/text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error("Server processed request unsuccessfully.");
+                
+                const data = await response.json();
+                
+                // Set output
+                document.getElementById('text-output').value = data.purified_text;
+                document.getElementById('output-char-counter').textContent = `${data.purified_char_count} characters`;
+                
+                // Update Telemetry stats card
+                itemsPurifiedCount++;
+                document.getElementById('metric-objects').textContent = itemsPurifiedCount;
+                document.getElementById('metric-entropy').textContent = data.metrics.scramble_rate;
+                document.getElementById('metric-quality').textContent = data.metrics.visual_preservation;
+                
+                // Update Risk status
+                const riskDot = document.getElementById('metric-risk-dot');
+                const riskText = document.getElementById('metric-risk-text');
+                riskText.textContent = data.metrics.watermark_risk;
+                
+                if (data.metrics.watermark_risk === 'Negligible') {
+                    riskDot.className = 'w-2.5 h-2.5 rounded-full bg-techblue mr-2 shadow-[0_0_8px_#489EB5]';
+                    riskText.className = 'text-techblue font-bold';
+                } else if (data.metrics.watermark_risk === 'Low') {
+                    riskDot.className = 'w-2.5 h-2.5 rounded-full bg-techblue/70 mr-2';
+                    riskText.className = 'text-techblue/80 font-bold';
+                } else {
+                    riskDot.className = 'w-2.5 h-2.5 rounded-full bg-rust mr-2';
+                    riskText.className = 'text-rust font-bold';
+                }
+                
+                showToast("Text sanitization completed successfully.");
+            } catch (err) {
+                console.error(err);
+                showToast("Error processing text. Check local logs.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "EXECUTE SANITIZATION";
+            }
+        }
+        
+        // Copy processed text to clipboard
+        function copyTextToClipboard() {
+            const outputArea = document.getElementById('text-output');
+            if (!outputArea.value) {
+                showToast("No text available to copy.");
+                return;
+            }
+            outputArea.select();
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            showToast("Clean text copied to clipboard.");
+        }
+        
+        // Image workbench drag-and-drop / Upload actions
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            loadSrcImage(file);
+        }
+        
+        function loadSrcImage(file) {
+            selectedFile = file;
+            document.getElementById('src-img-name').textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const srcData = evt.target.result;
+                
+                // Show inside source preview box
+                document.getElementById('drop-zone-idle').classList.add('hidden');
+                document.getElementById('drop-zone-active').classList.remove('hidden');
+                document.getElementById('preview-src').src = srcData;
+                
+                // Reset comparison slider targets
+                document.getElementById('preview-src-slider').src = srcData;
+                document.getElementById('preview-dest').src = srcData; // Initially same
+                
+                // Switch slide container views
+                document.getElementById('slider-placeholder').classList.add('hidden');
+                document.getElementById('slider-content').classList.remove('hidden');
+                document.getElementById('slider-help').classList.remove('hidden');
+                
+                initComparisonSlider();
+                showToast("Image loaded onto workbench.");
+            }
+            reader.readAsDataURL(file);
+        }
+        
+        // Drag over file behavior
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-electrum');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-electrum');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-electrum');
+            if (e.dataTransfer.files.length > 0) {
+                loadSrcImage(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // Process image upload to server
+        async function processImage() {
+            if (!selectedFile) {
+                showToast("Please upload an image first.");
+                return;
+            }
+            
+            const btn = document.getElementById('btn-purify-image');
+            btn.disabled = true;
+            btn.textContent = "SCRAMBLING PIXELS...";
+            
+            const strengthVal = ["light", "medium", "aggressive"][parseInt(strengthSlider.value) - 1];
+            
+            // Build multipart form data payload
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+            formData.append("strength", strengthVal);
+            formData.append("use_fft", document.getElementById('opt-fft').checked);
+            formData.append("use_jpeg", document.getElementById('opt-jpeg').checked);
+            formData.append("use_blur", document.getElementById('opt-blur').checked);
+            formData.append("use_jitter", document.getElementById('opt-jitter').checked);
+            
+            // Trigger spectrogram scramble animation
+            triggerScrambleAnimation(strengthSlider.value / 3.0);
+            
+            try {
+                const response = await fetch('/api/purify/image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error("Image scrambler API processing failed.");
+                
+                const data = await response.json();
+                
+                // Update processed preview
+                const destImg = document.getElementById('preview-dest');
+                destImg.src = data.purified_image_base64;
+                
+                // Update download link
+                const dwnBtn = document.getElementById('btn-download-image');
+                dwnBtn.href = data.purified_image_base64;
+                dwnBtn.download = `purified_${selectedFile.name}`;
+                
+                // Update Telemetry stats
+                itemsPurifiedCount++;
+                document.getElementById('metric-objects').textContent = itemsPurifiedCount;
+                document.getElementById('metric-entropy').textContent = data.metrics.scramble_factor;
+                document.getElementById('metric-quality').textContent = data.metrics.quality_retention;
+                
+                // Update Risk status
+                const riskDot = document.getElementById('metric-risk-dot');
+                const riskText = document.getElementById('metric-risk-text');
+                riskText.textContent = data.metrics.watermark_risk;
+                if (data.metrics.watermark_risk === 'Negligible') {
+                    riskDot.className = 'w-2.5 h-2.5 rounded-full bg-techblue mr-2 shadow-[0_0_8px_#489EB5]';
+                    riskText.className = 'text-techblue font-bold';
+                } else if (data.metrics.watermark_risk === 'Low') {
+                    riskDot.className = 'w-2.5 h-2.5 rounded-full bg-techblue/70 mr-2';
+                    riskText.className = 'text-techblue/80 font-bold';
+                } else {
+                    riskDot.className = 'w-2.5 h-2.5 rounded-full bg-rust mr-2';
+                    riskText.className = 'text-rust font-bold';
+                }
+                
+                showToast("Grid pattern scrambled. Image sanitized.");
+            } catch (err) {
+                console.error(err);
+                showToast("Error processing image. Verify image constraints.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "SCRAMBLE GRID PATTERN";
+            }
+        }
+        
+        // Interactive split slider comparison mechanism
+        const sliderContainer = document.getElementById('slider-container');
+        const originalClip = document.getElementById('original-clip-container');
+        const comparisonSlider = document.getElementById('comparison-slider');
+        
+        let activeSliderDragging = false;
+        
+        function initComparisonSlider() {
+            if (!sliderContainer || sliderContainer.classList.contains('hidden')) return;
+            
+            // Set starting point at 50%
+            updateSliderPosition(sliderContainer.offsetWidth / 2);
+        }
+        
+        function updateSliderPosition(x) {
+            const containerWidth = sliderContainer.offsetWidth;
+            // Bound position
+            let positionX = Math.max(0, Math.min(x, containerWidth));
+            let percentage = (positionX / containerWidth) * 100;
+            
+            comparisonSlider.style.left = `${percentage}%`;
+            originalClip.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+        }
+        
+        // Event listeners for dragging comparison bar
+        const startDragging = () => { activeSliderDragging = true; };
+        const stopDragging = () => { activeSliderDragging = false; };
+        
+        const dragMove = (e) => {
+            if (!activeSliderDragging) return;
+            
+            // Get mouse position relative to container
+            const containerRect = sliderContainer.getBoundingClientRect();
+            let pageX = e.pageX;
+            if (e.touches && e.touches[0]) {
+                pageX = e.touches[0].pageX;
+            }
+            const relativeX = pageX - containerRect.left - window.scrollX;
+            updateSliderPosition(relativeX);
+        };
+        
+        comparisonSlider.addEventListener('mousedown', startDragging);
+        window.addEventListener('mouseup', stopDragging);
+        window.addEventListener('mousemove', dragMove);
+        
+        comparisonSlider.addEventListener('touchstart', startDragging);
+        window.addEventListener('touchend', stopDragging);
+        window.addEventListener('touchmove', dragMove);
+        
+        // Resize listener to re-align handle
+        window.addEventListener('resize', initComparisonSlider);
+        
+        // Subscription Billing Modal controllers
+        function triggerUpgradeCheckout(tier) {
+            document.getElementById('checkout-tier-name').textContent = tier;
+            document.getElementById('checkout-price').textContent = '$19.00';
+            document.getElementById('billing-modal').classList.remove('hidden');
+            document.getElementById('billing-modal').classList.add('flex');
+        }
+        function closeUpgradeModal(success = false) {
+            document.getElementById('billing-modal').classList.add('hidden');
+            document.getElementById('billing-modal').classList.remove('flex');
+            document.getElementById('payment-success').classList.add('hidden');
+            if (success) {
+                showToast("Account successfully upgraded to Refine Pro.");
+            }
+        }
+        function executePayment() {
+            const btn = document.getElementById('btn-submit-payment');
+            btn.disabled = true;
+            btn.textContent = "Processing authorization...";
+            setTimeout(() => {
+                document.getElementById('payment-success').classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = "Authorize Subscription";
+            }, 1500);
+        }
+        
+        // Logout user session
+        function logoutSession() {
+            localStorage.removeItem('refine_token');
+            localStorage.removeItem('refine_username');
+            localStorage.removeItem('refine_email');
+            window.location.href = '/';
+        }
+        
+        // Boot script & Auth enforcement middleware
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('refine_token');
+            const username = localStorage.getItem('refine_username');
+            
+            if (!token) {
+                // Not authenticated -> redirect to auth portal
+                window.location.href = '/auth';
+                return;
+            }
+            
+            // Populate profile badge details
+            if (username) {
+                document.getElementById('user-profile-name').textContent = username;
+                // Generate initials
+                const initials = username.trim().split(/\s+/).map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                document.getElementById('user-avatar-initials').textContent = initials || 'U';
+            }
+            
+            initSpectrograph();
+            drawSpectrograph(0);
+        });
+    </script>
+
+    <!-- GitHub Star Nudge Modal (replaces billing modal) -->
+    <div id="billing-modal" class="fixed inset-0 bg-obsidian/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-lead border border-electrum w-full max-w-md rounded-lg overflow-hidden shadow-2xl relative font-mono text-xs text-gray-200">
+            <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">×</button>
+            <div class="p-8 space-y-6 text-center">
+                <div class="text-4xl select-none">★</div>
+                <div class="space-y-2">
+                    <h3 class="font-display font-bold text-base text-electrum uppercase tracking-wider">Refine is Free & Open-Source</h3>
+                    <p class="text-[11px] text-gray-400 leading-relaxed">Everything is already unlocked. No subscription needed. If Refine has been useful to you, consider starring the repo or sponsoring the contributors.</p>
+                </div>
+                <div class="space-y-3">
+                    <a href="https://github.com/Refine/Refine" target="_blank"
+                       class="flex items-center justify-center gap-2 w-full bg-obsidian border border-leadlight hover:border-electrum text-electrum px-6 py-3 rounded text-xs font-bold uppercase tracking-wider transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                        Star on GitHub
+                    </a>
+                    <button onclick="closeUpgradeModal()" class="w-full text-gray-500 hover:text-gray-300 py-2 text-[10px] uppercase tracking-widest transition-colors">
+                        Back to Workbench
+                    </button>
+                </div>
+                <p class="text-[9px] text-gray-600">MIT Licensed · All features free forever · No account required</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
