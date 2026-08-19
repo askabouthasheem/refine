@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from '../firebase';
 
@@ -168,9 +168,7 @@ export default function Landing({ navigate, user }: LandingProps) {
           <div className="w-8 h-8 rounded border border-electrum flex items-center justify-center font-display text-electrum font-bold text-lg select-none">R</div>
           <div>
             <h1 className="font-display font-bold text-base tracking-wide text-gray-100 flex items-center gap-2">
-              REFINE 
-              <span className="px-1.5 py-0.5 text-[9px] font-mono border border-techblue text-techblue rounded">MIT</span>
-              <span className="px-1.5 py-0.5 text-[9px] font-mono border border-leadlight text-gray-400 rounded">FREE</span>
+              REFINE
             </h1>
             <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">open-source watermark scrambler</p>
           </div>
