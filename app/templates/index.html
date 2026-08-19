@@ -78,10 +78,14 @@
             pointer-events: none;
         }
     </style>
-    <!-- Firebase Analytics -->
+    <!-- Hide body immediately — shown only after Firebase confirms auth. Prevents flash of unauthenticated content. -->
+    <style>body { display: none !important; }</style>
+    <!-- Firebase Auth Guard + Analytics -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { initializeApp }     from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
         const firebaseApp = initializeApp({
             apiKey: "AIzaSyBrNyA7KLgK6p-ElYFAqSgNaSNdn5Q134g",
             authDomain: "refineaiwatermark.firebaseapp.com",
@@ -91,8 +95,48 @@
             appId: "1:764634662018:web:a00b45bfc1947499c9a09b",
             measurementId: "G-K6TXTVGEN6"
         });
-        window._analytics = getAnalytics(firebaseApp);
-        logEvent(window._analytics, 'page_view', { page_title: 'Workbench', page_location: '/workbench' });
+
+        const analytics = getAnalytics(firebaseApp);
+        const auth      = getAuth(firebaseApp);
+
+        // onAuthStateChanged resolves once Firebase has rehydrated the session.
+        // Until then the body stays hidden — zero flash possible.
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // Not signed in — redirect before showing anything
+                window.location.href = '/auth';
+                return;
+            }
+
+            // Sync localStorage session data from real Firebase user object
+            const displayName = user.displayName || user.email.split('@')[0];
+            localStorage.setItem('refine_token',    user.accessToken || 'firebase');
+            localStorage.setItem('refine_username', displayName);
+            localStorage.setItem('refine_email',    user.email);
+
+            // Populate profile badge
+            const nameEl     = document.getElementById('user-profile-name');
+            const initialsEl = document.getElementById('user-avatar-initials');
+            if (nameEl)     nameEl.textContent     = displayName;
+            if (initialsEl) initialsEl.textContent = displayName.trim().split(/\s+/).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
+
+            // Show the page — auth confirmed
+            document.body.style.display = '';
+
+            // Analytics
+            logEvent(analytics, 'page_view', { page_title: 'Workbench', page_location: '/workbench' });
+
+            // Boot the spectrograph canvas
+            if (typeof initSpectrograph === 'function') {
+                initSpectrograph();
+                drawSpectrograph(0);
+            } else {
+                // initSpectrograph defined later in the non-module script — call after DOM ready
+                window.addEventListener('DOMContentLoaded', () => {
+                    if (typeof initSpectrograph === 'function') { initSpectrograph(); drawSpectrograph(0); }
+                });
+            }
+        });
     </script>
 </head>
 <body class="h-full font-sans text-gray-200 antialiased flex flex-col selection:bg-rust selection:text-white">
@@ -942,28 +986,6 @@
             window.location.href = '/';
         }
         
-        // Boot script & Auth enforcement middleware
-        window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('refine_token');
-            const username = localStorage.getItem('refine_username');
-            
-            if (!token) {
-                // Not authenticated -> redirect to auth portal
-                window.location.href = '/auth';
-                return;
-            }
-            
-            // Populate profile badge details
-            if (username) {
-                document.getElementById('user-profile-name').textContent = username;
-                // Generate initials
-                const initials = username.trim().split(/\s+/).map(n => n[0]).join('').slice(0, 2).toUpperCase();
-                document.getElementById('user-avatar-initials').textContent = initials || 'U';
-            }
-            
-            initSpectrograph();
-            drawSpectrograph(0);
-        });
     </script>
 
     <!-- GitHub Star Nudge Modal (replaces billing modal) -->
