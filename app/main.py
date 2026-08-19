@@ -1,9 +1,10 @@
-﻿import os
+import os
 import base64
 import io
 import uuid
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from PIL import Image
 
@@ -17,11 +18,13 @@ from app.purifier import (
 
 app = FastAPI(title="REFINE: AI Watermark Remover & Provenance Scrambler")
 
-# Path to templates
+# Path to templates / static files
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LANDING_TEMPLATE_PATH = os.path.join(BASE_DIR, "templates", "landing.html")
-WORKBENCH_TEMPLATE_PATH = os.path.join(BASE_DIR, "templates", "index.html")
-AUTH_TEMPLATE_PATH = os.path.join(BASE_DIR, "templates", "auth.html")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+ASSETS_DIR = os.path.join(STATIC_DIR, "assets")
+
+# Create static directories if they don't exist yet (to avoid mount startup crash)
+os.makedirs(ASSETS_DIR, exist_ok=True)
 
 # In-memory mock user database for runtime demonstration
 # Key: email (lowercase), Value: dict of user details
@@ -49,31 +52,9 @@ class TextPurifyRequest(BaseModel):
     use_zws: bool = True
     use_synonyms: bool = True
 
-# --- Pages Routes ---
+# --- SPA Routes ---
 
-@app.get("/", response_class=HTMLResponse)
-async def get_landing():
-    """Serves the marketing landing page."""
-    if not os.path.exists(LANDING_TEMPLATE_PATH):
-        raise HTTPException(status_code=404, detail="Landing template not found.")
-    with open(LANDING_TEMPLATE_PATH, "r", encoding="utf-8") as f:
-        return f.read()
-
-@app.get("/workbench", response_class=HTMLResponse)
-async def get_workbench():
-    """Serves the main single-page application dashboard/workbench."""
-    if not os.path.exists(WORKBENCH_TEMPLATE_PATH):
-        raise HTTPException(status_code=404, detail="Workbench template not found.")
-    with open(WORKBENCH_TEMPLATE_PATH, "r", encoding="utf-8") as f:
-        return f.read()
-
-@app.get("/auth", response_class=HTMLResponse)
-async def get_auth():
-    """Serves the signup/signin authentication page."""
-    if not os.path.exists(AUTH_TEMPLATE_PATH):
-        raise HTTPException(status_code=404, detail="Authentication portal template not found.")
-    with open(AUTH_TEMPLATE_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
 
 # --- Auth APIs ---
 
@@ -258,3 +239,17 @@ async def api_purify_image(
             "watermark_risk": watermark_risk
         }
     }
+
+@app.get("/{rest_of_path:path}")
+async def serve_spa(rest_of_path: str = ""):
+    """Serves the main SPA index file for all non-API routes."""
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    # If the request is for a root static asset like vite.svg or favicon.ico, serve it if it exists
+    if rest_of_path:
+        possible_file = os.path.join(STATIC_DIR, rest_of_path)
+        if os.path.exists(possible_file) and os.path.isfile(possible_file):
+            return FileResponse(possible_file)
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return HTMLResponse("Frontend not built. Please run 'npm run build' inside the frontend directory.")
+
