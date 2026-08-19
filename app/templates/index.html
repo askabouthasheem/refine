@@ -78,8 +78,6 @@
             pointer-events: none;
         }
     </style>
-    <!-- Hide body immediately — shown only after Firebase confirms auth. Prevents flash of unauthenticated content. -->
-    <style>body { display: none !important; }</style>
     <!-- Firebase Auth Guard + Analytics -->
     <script type="module">
         import { initializeApp }     from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -139,7 +137,7 @@
         });
     </script>
 </head>
-<body class="h-full font-sans text-gray-200 antialiased flex flex-col selection:bg-rust selection:text-white">
+<body style="display: none;" class="h-full font-sans text-gray-200 antialiased flex flex-col selection:bg-rust selection:text-white">
 
     <!-- Top Navigation Bar -->
     <header class="border-b border-leadlight bg-lead/75 backdrop-blur-md px-6 py-4 flex items-center justify-between z-10">
