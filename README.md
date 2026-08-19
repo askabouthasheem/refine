@@ -36,7 +36,7 @@ Refine fights back using mathematical perturbations that decouple content from i
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/Refine.git
+git clone https://github.com/askabouthasheem/refine.git
 cd Refine
 ```
 
