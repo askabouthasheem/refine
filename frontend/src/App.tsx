@@ -83,7 +83,7 @@ function App() {
     case '/workbench':
       return <Workbench navigate={navigate} user={user} />;
     default:
-      return <Landing navigate={navigate} user={user} />;
+      return <Landing navigate={navigate} />;
   }
 }
 
