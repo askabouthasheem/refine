@@ -37,6 +37,22 @@
         ::-webkit-scrollbar-thumb { background: #1E2132; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #C86B45; }
     </style>
+    <!-- Firebase Analytics -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+        const firebaseApp = initializeApp({
+            apiKey: "AIzaSyBrNyA7KLgK6p-ElYFAqSgNaSNdn5Q134g",
+            authDomain: "refineaiwatermark.firebaseapp.com",
+            projectId: "refineaiwatermark",
+            storageBucket: "refineaiwatermark.firebasestorage.app",
+            messagingSenderId: "764634662018",
+            appId: "1:764634662018:web:a00b45bfc1947499c9a09b",
+            measurementId: "G-K6TXTVGEN6"
+        });
+        const analytics = getAnalytics(firebaseApp);
+        logEvent(analytics, 'page_view', { page_title: 'Landing', page_location: '/' });
+    </script>
 </head>
 <body class="h-full font-sans text-gray-200 antialiased flex flex-col bg-obsidian selection:bg-rust selection:text-white scroll-smooth">
 

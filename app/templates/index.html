@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="h-full bg-obsidian">
 <head>
     <meta charset="UTF-8">
@@ -78,6 +78,22 @@
             pointer-events: none;
         }
     </style>
+    <!-- Firebase Analytics -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+        const firebaseApp = initializeApp({
+            apiKey: "AIzaSyBrNyA7KLgK6p-ElYFAqSgNaSNdn5Q134g",
+            authDomain: "refineaiwatermark.firebaseapp.com",
+            projectId: "refineaiwatermark",
+            storageBucket: "refineaiwatermark.firebasestorage.app",
+            messagingSenderId: "764634662018",
+            appId: "1:764634662018:web:a00b45bfc1947499c9a09b",
+            measurementId: "G-K6TXTVGEN6"
+        });
+        window._analytics = getAnalytics(firebaseApp);
+        logEvent(window._analytics, 'page_view', { page_title: 'Workbench', page_location: '/workbench' });
+    </script>
 </head>
 <body class="h-full font-sans text-gray-200 antialiased flex flex-col selection:bg-rust selection:text-white">
 
