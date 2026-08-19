@@ -381,7 +381,6 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
           <div>
             <h1 className="font-display font-bold text-lg tracking-wide text-gray-100 flex items-center">
               <button onClick={() => navigate('/')} className="hover:text-electrum transition-colors">REFINE</button>
-              <span className="ml-2 px-1.5 py-0.5 text-[10px] font-mono font-medium border border-rust text-rust rounded">V1.0</span>
             </h1>
             <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">AI watermark & provenance scrambler</p>
           </div>
