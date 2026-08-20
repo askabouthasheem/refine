@@ -16,7 +16,17 @@ from app.purifier import (
     purify_image_pipeline
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="REFINE: AI Watermark Remover & Provenance Scrambler")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Path to templates / static files
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

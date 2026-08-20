@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import subprocess
 import os
 
@@ -27,10 +27,12 @@ def check_and_install_dependencies():
             sys.exit(1)
 
 def run_server():
-    print("Launching Uvicorn server on http://localhost:8000")
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", 8000))
+    reload = os.environ.get("RELOAD", "false").lower() in ("true", "1") or os.environ.get("ENV") == "development"
+    print(f"Launching Uvicorn server on http://{host}:{port} (reload={reload})")
     import uvicorn
-    # Start the server on port 8000
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.main:app", host=host, port=port, reload=reload)
 
 if __name__ == "__main__":
     check_and_install_dependencies()
