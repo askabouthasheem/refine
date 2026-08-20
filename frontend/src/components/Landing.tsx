@@ -204,16 +204,6 @@ export default function Landing({ navigate }: LandingProps) {
         />
         
         <div className="max-w-4xl mx-auto text-center z-10 space-y-8 relative pointer-events-none">
-          <div className="inline-flex items-center gap-3 border border-leadlight bg-lead/60 px-5 py-1.5 rounded-full font-mono text-[10px] text-gray-300 tracking-wider uppercase backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-techblue animate-pulse shrink-0"></span>
-            <span>Free Forever</span>
-            <span className="text-gray-600">/</span>
-            <span>Self-Hosted</span>
-            <span className="text-gray-600">/</span>
-            <span className="text-techblue">MIT Licensed</span>
-            <span className="text-gray-600">/</span>
-            <span>No Telemetry</span>
-          </div>
           
           <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
             Your content.<br />
