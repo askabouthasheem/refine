@@ -338,17 +338,15 @@ export default function Landing({ navigate }: LandingProps) {
           <div className="text-center space-y-3">
             <h2 className="font-display text-2xl sm:text-4xl font-bold text-white tracking-tight">Self-Host in 30 Seconds</h2>
             <p className="text-xs sm:text-sm text-gray-400 max-w-xl mx-auto">Three ways to run Refine. No Docker account, no registration, no cloud dependency.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Python */}
-            <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4">
+            <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4 overflow-hidden">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 border border-electrum rounded flex items-center justify-center text-electrum font-mono text-xs font-bold">PY</div>
                 <h3 className="font-display font-semibold text-white">Python (pip)</h3>
               </div>
-              <div className="bg-lead rounded p-4 font-mono text-xs text-gray-300 space-y-1 leading-loose">
-                <div><span className="text-gray-500">$</span> git clone https://github.com/askabouthasheem/refine</div>
+              <div className="bg-lead rounded p-4 font-mono text-xs text-gray-300 space-y-1 leading-loose overflow-hidden">
+                <div className="break-all"><span className="text-gray-500">$</span> git clone https://github.com/askabouthasheem/refine</div>
                 <div><span className="text-gray-500">$</span> pip install -r requirements.txt</div>
                 <div><span className="text-gray-500">$</span> python run.py</div>
               </div>
@@ -356,12 +354,12 @@ export default function Landing({ navigate }: LandingProps) {
             </div>
 
             {/* Docker */}
-            <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4">
+            <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4 overflow-hidden">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 border border-techblue rounded flex items-center justify-center text-techblue font-mono text-xs font-bold">🐳</div>
                 <h3 className="font-display font-semibold text-white">Docker</h3>
               </div>
-              <div className="bg-lead rounded p-4 font-mono text-xs text-gray-300 space-y-1 leading-loose">
+              <div className="bg-lead rounded p-4 font-mono text-xs text-gray-300 space-y-1 leading-loose overflow-hidden">
                 <div><span className="text-gray-500">$</span> docker run -p 8000:8000 \</div>
                 <div>&nbsp;&nbsp;--rm refine/refine</div>
                 <div className="text-gray-500"># or build from source:</div>
@@ -372,13 +370,14 @@ export default function Landing({ navigate }: LandingProps) {
             </div>
 
             {/* Venv */}
-            <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4">
+            <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4 overflow-hidden">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 border border-rust rounded flex items-center justify-center text-rust font-mono text-xs font-bold">ENV</div>
                 <h3 className="font-display font-semibold text-white">Virtualenv</h3>
               </div>
-              <div className="bg-lead rounded p-4 font-mono text-xs text-gray-300 space-y-1 leading-loose">
-                <div><span className="text-gray-500">$</span> git clone https://github.com/askabouthasheem/refine &amp;&amp; cd refine</div>
+              <div className="bg-lead rounded p-4 font-mono text-xs text-gray-300 space-y-1 leading-loose overflow-hidden">
+                <div className="break-all"><span className="text-gray-500">$</span> git clone https://github.com/askabouthasheem/refine</div>
+                <div><span className="text-gray-500">$</span> cd refine</div>
                 <div><span className="text-gray-500">$</span> python -m venv .venv</div>
                 <div><span className="text-gray-500">$</span> source .venv/bin/activate</div>
                 <div><span className="text-gray-500">$</span> pip install -r requirements.txt</div>
@@ -386,6 +385,7 @@ export default function Landing({ navigate }: LandingProps) {
               </div>
               <p className="text-[10px] text-gray-500 font-mono">Isolated environment, no global packages.</p>
             </div>
+          </div>
           </div>
         </div>
       </section>
