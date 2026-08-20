@@ -335,10 +335,10 @@ export default function Landing({ navigate }: LandingProps) {
       {/* Self Host Guide */}
       <section id="self-host" className="py-20 px-6 border-b border-leadlight bg-lead">
         <div className="max-w-5xl mx-auto space-y-12">
-          <div className="text-center space-y-3">
+          <div className="space-y-3">
             <h2 className="font-display text-2xl sm:text-4xl font-bold text-white tracking-tight">Self-Host in 30 Seconds</h2>
-            <p className="text-xs sm:text-sm text-gray-400 max-w-xl mx-auto">Three ways to run Refine. No Docker account, no registration, no cloud dependency.</p>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <p className="text-xs sm:text-sm text-gray-400 max-w-xl">Three ways to run Refine. No Docker account, no registration, no cloud dependency.</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
             {/* Python */}
             <div className="border border-leadlight bg-obsidian rounded p-6 space-y-4 overflow-hidden">
               <div className="flex items-center gap-3">
