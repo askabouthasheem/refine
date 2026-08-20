@@ -16,6 +16,8 @@ from app.purifier import (
     purify_image_pipeline
 )
 
+import asyncio
+import urllib.request
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="REFINE: AI Watermark Remover & Provenance Scrambler")
@@ -27,6 +29,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def keep_alive_task():
+    """Periodically pings the public URL to keep Render free-tier instances warm."""
+    app_url = os.environ.get("RENDER_EXTERNAL_URL") or os.environ.get("APP_URL")
+    if not app_url:
+        return
+    
+    health_url = app_url.rstrip("/") + "/api/health"
+    print(f"[Keep-Alive] Initialized self-pinger for: {health_url}")
+    
+    while True:
+        await asyncio.sleep(600)  # Ping every 10 minutes (before 15m idle shutdown)
+        try:
+            req = urllib.request.Request(health_url, headers={"User-Agent": "RefineKeepAlive/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as res:
+                print(f"[Keep-Alive] Ping {health_url} -> {res.getcode()}")
+        except Exception as e:
+            print(f"[Keep-Alive] Ping notice: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(keep_alive_task())
 
 # Path to templates / static files
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
