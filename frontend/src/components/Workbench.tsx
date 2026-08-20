@@ -69,6 +69,7 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
 
   // Modal & Toast
   const [starModalOpen, setStarModalOpen] = useState(false);
+  const [signOutModalOpen, setSignOutModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
 
@@ -400,7 +401,7 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
             </div>
             <div className="hidden sm:block text-left text-[10px] font-mono leading-none">
               <div className="text-gray-200 font-bold">{displayName}</div>
-              <button onClick={handleSignOut} className="text-rust hover:text-white transition-colors uppercase tracking-wider mt-1 text-[9px] block">
+              <button onClick={() => setSignOutModalOpen(true)} className="text-rust hover:text-white transition-colors uppercase tracking-wider mt-1 text-[9px] block">
                 Sign Out
               </button>
             </div>
@@ -782,6 +783,34 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
           </div>
         </main>
       </div>
+
+      {/* Sign Out Confirmation Modal */}
+      {signOutModalOpen && (
+        <div className="fixed inset-0 bg-obsidian/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-lead border border-leadlight w-full max-w-sm rounded-lg overflow-hidden shadow-2xl relative font-mono text-xs text-gray-200">
+            <div className="p-8 space-y-6 text-center">
+              <div className="space-y-2">
+                <h3 className="font-display font-bold text-sm text-gray-100 uppercase tracking-wider">Sign Out?</h3>
+                <p className="text-[11px] text-gray-400 leading-relaxed">You'll need to sign back in to access the workbench.</p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSignOutModalOpen(false)}
+                  className="flex-1 bg-obsidian border border-leadlight hover:border-electrum text-gray-300 hover:text-electrum px-4 py-2.5 rounded text-[11px] font-bold uppercase tracking-wider transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => { setSignOutModalOpen(false); handleSignOut(); }}
+                  className="flex-1 bg-rust/10 border border-rust hover:bg-rust text-rust hover:text-white px-4 py-2.5 rounded text-[11px] font-bold uppercase tracking-wider transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Star Modal */}
       {starModalOpen && (
