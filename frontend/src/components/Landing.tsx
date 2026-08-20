@@ -450,7 +450,6 @@ export default function Landing({ navigate }: LandingProps) {
             <a href="https://github.com/askabouthasheem/refine" target="_blank" rel="noreferrer" className="hover:text-electrum transition-colors">GitHub</a>
             <button onClick={() => navigate('/workbench')} className="hover:text-electrum transition-colors">Workbench</button>
             <a href="https://github.com/askabouthasheem/refine/blob/main/LICENSE" target="_blank" rel="noreferrer" className="hover:text-electrum transition-colors">MIT License</a>
-            <button onClick={() => navigate('/auth')} className="hover:text-electrum transition-colors">Sign In</button>
           </div>
         </div>
       </footer>
