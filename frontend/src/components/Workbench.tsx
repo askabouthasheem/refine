@@ -374,7 +374,7 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
   return (
     <div className="flex-1 flex flex-col bg-obsidian text-gray-200">
       {/* Top Navbar */}
-      <header className="border-b border-leadlight bg-lead/75 backdrop-blur-md px-6 py-4 flex items-center justify-between z-10 select-none">
+      <header className="border-b border-leadlight bg-lead px-6 py-4 flex items-center justify-between z-10 select-none">
         <div className="flex items-center space-x-3">
           <button onClick={() => navigate('/')} className="w-8 h-8 rounded border border-electrum hover:border-rust flex items-center justify-center font-display text-electrum hover:text-rust font-bold text-lg select-none transition-colors">
             R
@@ -692,8 +692,8 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
                           </div>
 
                           {/* Badges */}
-                          <span className="absolute top-3 left-3 bg-obsidian/75 backdrop-blur-md px-2 py-0.5 text-[9px] font-mono text-gray-400 border border-leadlight rounded select-none z-10 pointer-events-none">ORIGINAL</span>
-                          <span className="absolute top-3 right-3 bg-obsidian/75 backdrop-blur-md px-2 py-0.5 text-[9px] font-mono text-electrum border border-leadlight rounded select-none z-10 pointer-events-none">PURIFIED</span>
+                          <span className="absolute top-3 left-3 bg-obsidian px-2 py-0.5 text-[9px] font-mono text-gray-400 border border-leadlight select-none z-10 pointer-events-none">ORIGINAL</span>
+                          <span className="absolute top-3 right-3 bg-obsidian px-2 py-0.5 text-[9px] font-mono text-electrum border border-leadlight select-none z-10 pointer-events-none">PURIFIED</span>
 
                           {/* Download Button */}
                           {destPreviewUrl !== srcPreviewUrl && (

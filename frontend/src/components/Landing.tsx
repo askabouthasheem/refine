@@ -163,7 +163,7 @@ export default function Landing({ navigate }: LandingProps) {
     <div className="flex-1 flex flex-col bg-obsidian text-gray-200 scroll-smooth">
       {/* Floating Header */}
       <div className="fixed top-4 left-0 right-0 z-40 px-4 sm:px-6">
-        <header className="max-w-6xl mx-auto border border-leadlight bg-lead/85 backdrop-blur-md px-6 py-3.5 flex items-center justify-between shadow-lg shadow-black/30">
+        <header className="max-w-6xl mx-auto border border-leadlight bg-lead px-6 py-3.5 flex items-center justify-between shadow-2xl shadow-black/80">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 border border-electrum flex items-center justify-center font-display text-electrum font-bold text-lg select-none">R</div>
             <div>
