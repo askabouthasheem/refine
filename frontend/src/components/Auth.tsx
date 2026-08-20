@@ -152,9 +152,9 @@ export default function Auth({ navigate }: AuthProps) {
       <div className="w-full max-w-md bg-lead border border-leadlight rounded-lg shadow-2xl overflow-hidden z-10">
         {/* Auth Header */}
         <div className="border-b border-leadlight bg-obsidian p-6 text-center select-none">
-          <div className="w-10 h-10 rounded border border-electrum flex items-center justify-center font-display text-electrum font-bold text-lg select-none mx-auto mb-3">R</div>
-          <h2 className="font-display text-xl font-bold tracking-tight text-white uppercase">Refine Gatekeeper</h2>
-          <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">Identity & cryptology clearance</p>
+          <div className="w-10 h-10 border border-electrum flex items-center justify-center font-display text-electrum font-bold text-lg select-none mx-auto mb-3">R</div>
+          <h2 className="font-display text-xl font-bold tracking-tight text-white uppercase">REFINE</h2>
+          <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">open-source watermark scrambler</p>
         </div>
 
         {/* Form Mode Selector */}
