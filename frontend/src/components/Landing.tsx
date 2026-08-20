@@ -170,7 +170,7 @@ export default function Landing({ navigate }: LandingProps) {
               <h1 className="font-display font-bold text-base tracking-wide text-gray-100 flex items-center gap-2">
                 REFINE
               </h1>
-              <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">open-source watermark scrambler</p>
+              <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest hidden xs:block">open-source watermark scrambler</p>
             </div>
           </div>
           

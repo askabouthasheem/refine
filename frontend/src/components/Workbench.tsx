@@ -362,12 +362,25 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
       setIsSliderDragging(false);
     };
 
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (!isSliderDragging || e.touches.length === 0) return;
+      handleSliderMove(e.touches[0].clientX);
+    };
+
+    const handleGlobalTouchEnd = () => {
+      setIsSliderDragging(false);
+    };
+
     window.addEventListener('mousemove', handleGlobalMouseMove);
     window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
+    window.addEventListener('touchend', handleGlobalTouchEnd);
 
     return () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('touchmove', handleGlobalTouchMove);
+      window.removeEventListener('touchend', handleGlobalTouchEnd);
     };
   }, [isSliderDragging]);
 
@@ -383,7 +396,7 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
             <h1 className="font-display font-bold text-lg tracking-wide text-gray-100 flex items-center">
               <button onClick={() => navigate('/')} className="hover:text-electrum transition-colors">REFINE</button>
             </h1>
-            <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">AI watermark & provenance scrambler</p>
+            <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest hidden xs:block">AI watermark & provenance scrambler</p>
           </div>
         </div>
 
@@ -396,9 +409,13 @@ export default function Workbench({ navigate, user }: WorkbenchProps) {
 
           {/* User badge */}
           <div className="flex items-center space-x-2 border-l border-leadlight pl-4">
-            <div className="w-7 h-7 rounded-full bg-leadlight border border-electrum flex items-center justify-center font-display text-[10px] font-bold text-electrum select-none uppercase">
+            <button 
+              onClick={() => setSignOutModalOpen(true)}
+              title="Click to sign out"
+              className="w-7 h-7 rounded-full bg-leadlight border border-electrum hover:border-rust flex items-center justify-center font-display text-[10px] font-bold text-electrum hover:text-rust select-none uppercase transition-colors"
+            >
               {userInitials}
-            </div>
+            </button>
             <div className="hidden sm:block text-left text-[10px] font-mono leading-none">
               <div className="text-gray-200 font-bold">{displayName}</div>
               <button onClick={() => setSignOutModalOpen(true)} className="text-rust hover:text-white transition-colors uppercase tracking-wider mt-1 text-[9px] block">
